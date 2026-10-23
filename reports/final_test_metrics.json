@@ -1,0 +1,26 @@
+{
+  "model": "random_forest",
+  "evaluation_split": "test",
+  "sample_count": 1409,
+  "positive_class": "Yes",
+  "classification_threshold": 0.5,
+  "accuracy": 0.7828246983676366,
+  "precision": 0.6111111111111112,
+  "recall": 0.5,
+  "f1": 0.55,
+  "average_precision": 0.6289321843653721,
+  "confusion_matrix_labels": [
+    "No",
+    "Yes"
+  ],
+  "confusion_matrix": [
+    [
+      916,
+      119
+    ],
+    [
+      187,
+      187
+    ]
+  ]
+}

@@ -114,3 +114,50 @@ uv run ruff format --check .
 The project uses `uv.lock` to lock dependency versions. The inspection report records the Python and pandas versions and the SHA-256 hash of the source CSV, allowing the dataset and execution environment to be identified.
 
 To reproduce the report, use the same source dataset and run the inspection command in the configured environment.
+
+## Training Pipeline and Model Selection
+
+### Features and target
+
+The model predicts customer churn, with `Yes` encoded as 1 (positive class) and `No` as 0. It uses six features:
+
+- Numeric: `tenure`, `MonthlyCharges`, `TotalCharges`
+- Categorical: `Contract`, `InternetService`, `PaymentMethod`
+
+Empty or whitespace-only values are treated as missing. Numeric preprocessing uses median imputation and standardization. Categorical preprocessing uses most-frequent imputation and one-hot encoding, with unseen categories ignored.
+
+### Reproducible data splits
+
+The dataset is divided into stratified training, validation, and test sets using a fixed random seed of 42:
+
+- Training: 4,225 customers
+- Validation: 1,409 customers
+- Test: 1,409 customers
+
+Customer IDs are excluded from the model features, and the splits are checked for overlap. Preprocessing is fitted on training data only.
+
+### Model comparison
+
+Four candidates are evaluated on the same training and validation sets: a majority-class baseline, logistic regression, decision tree, and random forest.
+
+Validation average precision is the primary selection metric. Random forest achieved the highest average precision (0.6700), so it was selected as the candidate model. Logistic regression achieved the highest accuracy (0.8041), while the decision tree achieved the highest recall (0.6016) and F1 score (0.6156) at the default threshold of 0.5.
+
+The test set remains reserved for final evaluation after model selection.
+
+### Saved artifacts
+
+- `reports/model_comparison.json`: validation metrics for all candidates.
+- `reports/model_selection.md`: model selection rationale.
+- `models/telco_churn_pipeline.joblib`: complete fitted preprocessing and classification pipeline.
+- `models/metadata.json`: model parameters, data hash, split information, preprocessing configuration, metrics, and environment details.
+- `models/validation_predictions.json`: saved validation predictions for reload verification.
+
+### Run the workflow
+
+```bash
+uv run python -m telco_churn.train
+uv run python -m telco_churn.verify_model
+uv run python -m telco_churn.check_pipeline
+```
+
+The verification scripts check prediction consistency after reloading, training-only preprocessing statistics, missing numeric values, unseen categories, required-feature validation, and customer split separation.
