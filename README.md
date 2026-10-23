@@ -51,6 +51,20 @@ data/raw/datasets.csv
 
 The dataset is intentionally excluded from Git to preserve the original source file and avoid committing raw data.
 
+## Source Dataset
+
+The original CSV file is not tracked by Git. Obtain the Telco Customer Churn dataset from the source specified by the course materials and place it at `data/raw/datasets.csv`.
+
+To verify the integrity of the downloaded file, calculate its SHA-256 hash:
+
+```bash
+shasum -a 256 data/raw/datasets.csv
+```
+
+Compare the result with the `sha256` value recorded in `reports/data_overview.json`. The hashes should match if the file is identical to the dataset used to generate the report.
+
+Keep the original CSV unchanged. If the hash differs, check the dataset source and download before proceeding.
+
 ## Data Inspection
 
 Run the inspection script:
